@@ -53,13 +53,10 @@ jobs:
       - name: Compile kernel with envkernel
         run: |
           cd linux
-          mkdir -p .output
-          cp ../alioth.config .output/.config
           shopt -s expand_aliases
           source ../pmbootstrap/helpers/envkernel.sh
-          pmbroot chown -R pmos:pmos /mnt/linux
-          pmbroot chmod -R u+rwX /mnt/linux
-          make olddefconfig
+          make defconfig sm8250.config
+          cp ../alioth.config .output/.config
           make -j$(nproc)
           pmbootstrap build --envkernel linux-postmarketos-qcom-sm8250-alioth
 
