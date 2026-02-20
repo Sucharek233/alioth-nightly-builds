@@ -36,6 +36,10 @@ jobs:
           git checkout github/main -- device-xiaomi-alioth/
           git checkout github/main -- firmware-xiaomi-alioth/
           git checkout github/main -- linux-postmarketos-qcom-sm8250-alioth/
+          mv device-xiaomi-alioth device/testing/
+          mv firmware-xiaomi-alioth device/testing/
+          mv linux-postmarketos-qcom-sm8250-alioth device/testing/
+
           git status
 
       - name: Clone kernel sources
