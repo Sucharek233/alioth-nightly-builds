@@ -33,9 +33,9 @@ jobs:
           git remote get-url github 2>/dev/null || \
           git remote add github https://github.com/Ayushskull7/pmaports-alioth-new
           git fetch github main
-          git checkout github/main -- device/testing/device-xiaomi-alioth/
-          git checkout github/main -- device/testing/firmware-xiaomi-alioth/
-          git checkout github/main -- device/testing/linux-postmarketos-qcom-sm8250-alioth/
+          git checkout github/main -- device-xiaomi-alioth/
+          git checkout github/main -- firmware-xiaomi-alioth/
+          git checkout github/main -- linux-postmarketos-qcom-sm8250-alioth/
           git status
 
       - name: Clone kernel sources
