@@ -30,9 +30,13 @@ jobs:
         run: |
           echo -e '\n\n' | pmbootstrap init || true
           cd ~/.local/var/pmbootstrap/cache_git/pmaports
-          git remote add mainlining https://github.com/mainlining/pmaports.git
-          git fetch mainlining nikroks/alioth
-          git reset --hard mainlining/nikroks/alioth
+          git remote get-url github 2>/dev/null || \
+          git remote add github https://github.com/Ayushskull7/pmaports-alioth-new
+          git fetch github main
+          git checkout github/main -- device/testing/device-xiaomi-alioth/
+          git checkout github/main -- device/testing/firmware-xiaomi-alioth/
+          git checkout github/main -- device/testing/linux-postmarketos-qcom-sm8250-alioth/
+          git status
 
       - name: Clone kernel sources
         run: |
@@ -47,7 +51,9 @@ jobs:
           cd linux
           shopt -s expand_aliases
           source ../pmbootstrap/helpers/envkernel.sh
-          make defconfig sm8250.config
+          mkdir -p .output
+          cp ../alioth.config .output/.config
+          make olddefconfig
           make -j$(nproc)
           pmbootstrap build --envkernel linux-postmarketos-qcom-sm8250-alioth
 
@@ -60,7 +66,7 @@ jobs:
           cp xiaomi-alioth.cfg ~/.config/pmbootstrap_v3.cfg
           pmbootstrap install --password 147147
           pmbootstrap export
-          cp /tmp/postmarketOS-export/boot.img out/boot-xiaomi-tianma-alioth.img
+          cp /tmp/postmarketOS-export/boot.img out/boot-xiaomi-alioth.img
           cp /tmp/postmarketOS-export/xiaomi-alioth.img out/rootfs-xiaomi-alioth.img
 
       - name: Upload artifacts
