@@ -57,6 +57,29 @@ jobs:
           shopt -s expand_aliases
           source ../pmbootstrap/helpers/envkernel.sh
           make alioth_defconfig
+          echo "===== VERIFYING CRITICAL KERNEL OPTIONS ====="
+          CONFIG=.output/.config
+          
+          grep -E "CONFIG_ARM64_VA_BITS=48" $CONFIG
+          grep -E "CONFIG_PGTABLE_LEVELS=4" $CONFIG
+          
+          grep -E "^# CONFIG_EFI_ZBOOT is not set" $CONFIG
+          
+          grep -E "CONFIG_USB=y" $CONFIG
+          grep -E "CONFIG_USB_DWC3=y" $CONFIG
+          grep -E "CONFIG_USB_DWC3_QCOM=y" $CONFIG
+          grep -E "CONFIG_USB_STORAGE=y" $CONFIG
+          grep -E "CONFIG_USB_UAS=y" $CONFIG
+          grep -E "CONFIG_USB_ROLE_SWITCH=y" $CONFIG
+          
+          grep -E "CONFIG_SCSI=y" $CONFIG
+          grep -E "CONFIG_BLK_DEV_SD=y" $CONFIG
+          
+          grep -E "CONFIG_NTFS3_FS=y" $CONFIG
+          grep -E "CONFIG_VFAT_FS=y" $CONFIG
+          grep -E "CONFIG_FAT_FS=y" $CONFIG
+          
+          echo "===== KERNEL CONFIG VERIFICATION DONE ====="
           make -j$(nproc)
           pmbootstrap build --envkernel linux-postmarketos-qcom-sm8250-alioth
 
