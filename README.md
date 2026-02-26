@@ -10,4 +10,16 @@ The default user is called `user`, the password is `147147`, just like on offici
 
 ## Downloading
 
-Head to the [Actions tab](https://github.com/N1kroks/alioth-nightly-builds/actions), select the most recent successful run and download the artifact for your device. Extract the Zip, de-compress the rootfs and you're ready to flash!
+Head to the [Actions tab](https://github.com/Ayushskull7/alioth-nightly-builds/actions), select the most recent successful run and download the artifact for your device. Extract the Zip, de-compress the rootfs and you're ready to flash!
+
+---
+# 1. Installation guide
+```
+fastboot erase dtbo_b
+pmbootstrap flasher flash_rootfs --partition userdata
+pmbootstrap flasher flash_kernel --partition boot_b
+fastboot set_active b
+fastboot reboot
+```
+
+Needs reboot after first boot, because of the issues with GUI.
