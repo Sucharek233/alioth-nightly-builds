@@ -6,7 +6,7 @@ This repository contains workflows and configurations to automatically build Pos
 
 The CI builds images once per week on fridays at midnight UTC. When completed, it will upload artifacts for each device that was built. These artifacts contain `boot.img` and an xz-compressed rootfs. Artifacts are kept for one week (i.e. until the next rebuild).
 
-The default user is called `user`, the password is `147147`, just like on official PostmarketOS stable images.
+The default user is called `ayu`, the password is `147147`, just like on official PostmarketOS stable images.
 
 ## Downloading
 
