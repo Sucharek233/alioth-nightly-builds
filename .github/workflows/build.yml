@@ -90,6 +90,9 @@ jobs:
       - name: Build xiaomi-alioth
         run: |
           cp xiaomi-alioth.cfg ~/.config/pmbootstrap_v3.cfg
+
+          pmbootstrap chroot -b -- true || true
+          
           pmbootstrap install --password 147147
           pmbootstrap export
           cp /tmp/postmarketOS-export/boot.img out/boot-xiaomi-alioth.img
