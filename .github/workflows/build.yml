@@ -91,11 +91,11 @@ jobs:
         run: |
           cp xiaomi-alioth.cfg ~/.config/pmbootstrap_v3.cfg
 
-          pmbootstrap --details-to-stdout chroot -b -- true || true
-          pmbootstrap --details-to-stdout install --password 147147 || true
+          pmbootstrap chroot -b -- true || true
+          pmbootstrap install --password 147147 || true
 
-          pmbootstrap --details-to-stdout chroot -b -- true || true
-          pmbootstrap --details-to-stdout install --password 147147 || true
+          pmbootstrap chroot -b -- true || true
+          pmbootstrap install --password 147147
 
           pmbootstrap export
           cp /tmp/postmarketOS-export/boot.img out/boot-xiaomi-alioth.img
@@ -106,4 +106,4 @@ jobs:
         with:
           name: xiaomi-alioth
           path: out/*-alioth.img*
-          retention-days: 7
+          retention-days: 90
