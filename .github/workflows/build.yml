@@ -31,7 +31,7 @@ jobs:
           echo -e '\n\n' | pmbootstrap init || true
           cd ~/.local/var/pmbootstrap/cache_git/pmaports
           git remote get-url github 2>/dev/null || \
-          git remote add github https://github.com/wbmins/pmaports-alioth
+          git remote add github https://github.com/Ayushskull7/pmaports-alioth-new
           git fetch github main
           git checkout github/main -- device-xiaomi-alioth/
           git checkout github/main -- firmware-xiaomi-alioth/
@@ -44,7 +44,7 @@ jobs:
 
       - name: Clone kernel sources
         run: |
-          git clone https://gitlab.postmarketos.org/soc/qualcomm-sm8250/linux --single-branch --branch 7.1.0-dev --depth 1 ./linux
+          git clone https://github.com/mainlining/linux.git --single-branch --branch nikroks/alioth --depth 1 ./linux
 
       - name: Choose any SM8250 device in pmbootstrap to build kernel
         run: |
