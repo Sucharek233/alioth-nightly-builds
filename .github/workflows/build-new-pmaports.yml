@@ -1,0 +1,82 @@
+name: Build images (new pmaports)
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 5' # Run every Friday at midnight
+
+jobs:
+  build-image-new-pmaports:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out build configurations
+        uses: actions/checkout@v4
+
+      - name: Substitute placeholders in configs
+        run: |
+          find . -type f -name "*.cfg" -exec sed -i "s|HOME|$(echo $HOME)|;s|NPROC|$(nproc)|" {} +
+
+      - name: Install pmbootstrap from git
+        run: |
+          git clone --depth=1 https://gitlab.postmarketos.org/postmarketOS/pmbootstrap.git
+          mkdir -p ~/.local/bin
+          ln -s "$PWD/pmbootstrap/pmbootstrap.py" ~/.local/bin/pmbootstrap
+          pmbootstrap --version
+
+      - name: Set up newer pmaports packages
+        run: |
+          echo -e '\n\n' | pmbootstrap -v init || true
+          PMAPORTS="$HOME/.local/var/pmbootstrap/cache_git/pmaports"
+          mkdir -p "$PMAPORTS/device/testing"
+
+          git clone --depth=1 --branch main \
+            https://github.com/rusyd4/pmaports-alioth.git new-pmaports
+
+          rm -rf \
+            "$PMAPORTS/device/testing/device-xiaomi-alioth" \
+            "$PMAPORTS/device/testing/firmware-xiaomi-alioth" \
+            "$PMAPORTS/device/testing/linux-postmarketos-qcom-sm8250-alioth"
+          cp -a new-pmaports/device-xiaomi-alioth \
+            new-pmaports/firmware-xiaomi-alioth \
+            new-pmaports/linux-postmarketos-qcom-sm8250-alioth \
+            "$PMAPORTS/device/testing/"
+
+          test -f "$PMAPORTS/device/testing/linux-postmarketos-qcom-sm8250-alioth/APKBUILD"
+          grep -E '^pkgver=|^_tag=' \
+            "$PMAPORTS/device/testing/linux-postmarketos-qcom-sm8250-alioth/APKBUILD"
+          git -C "$PMAPORTS" status --short
+
+      - name: Select xiaomi-alioth configuration
+        run: |
+          cp xiaomi-alioth.cfg ~/.config/pmbootstrap_v3.cfg
+
+      - name: Build newer kernel package
+        run: |
+          pmbootstrap -v build linux-postmarketos-qcom-sm8250-alioth
+
+      - name: Build xiaomi-alioth image
+        run: |
+          pmbootstrap -v install --password 147147
+          pmbootstrap -v export
+
+          mkdir out-new-pmaports
+          cp /tmp/postmarketOS-export/boot.img \
+            out-new-pmaports/boot-xiaomi-alioth-new-pmaports.img
+          cp /tmp/postmarketOS-export/xiaomi-alioth.img \
+            out-new-pmaports/rootfs-xiaomi-alioth-new-pmaports.img
+
+      - name: Upload new pmaports artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: xiaomi-alioth-new-pmaports
+          path: out-new-pmaports/*.img
+          retention-days: 90
+
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log-new-pmaports
+          path: ~/.local/var/pmbootstrap/log.txt
+          if-no-files-found: warn
+          retention-days: 90
