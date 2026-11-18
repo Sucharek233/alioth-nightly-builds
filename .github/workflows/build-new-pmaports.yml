@@ -30,7 +30,7 @@ jobs:
           mkdir -p "$PMAPORTS/device/testing"
 
           git clone --depth=1 --branch main \
-            https://github.com/rusyd4/pmaports-alioth.git new-pmaports
+            https://github.com/Sucharek233/pmaports-alioth.git new-pmaports
 
           rm -rf \
             "$PMAPORTS/device/testing/device-xiaomi-alioth" \
@@ -40,8 +40,16 @@ jobs:
             new-pmaports/firmware-xiaomi-alioth \
             new-pmaports/linux-postmarketos-qcom-sm8250-alioth \
             "$PMAPORTS/device/testing/"
+          if [ ! -f new-pmaports/modemmanager/APKBUILD ]; then
+            echo "Missing modemmanager overlay in Sucharek233/pmaports-alioth main; publish it there first." >&2
+            exit 1
+          fi
+          mkdir -p "$PMAPORTS/device/testing/modemmanager"
+          cp -a new-pmaports/modemmanager/. \
+            "$PMAPORTS/device/testing/modemmanager/"
 
           test -f "$PMAPORTS/device/testing/linux-postmarketos-qcom-sm8250-alioth/APKBUILD"
+          test -f "$PMAPORTS/device/testing/modemmanager/APKBUILD"
           grep -E '^pkgver=|^_tag=' \
             "$PMAPORTS/device/testing/linux-postmarketos-qcom-sm8250-alioth/APKBUILD"
           git -C "$PMAPORTS" status --short
@@ -53,6 +61,11 @@ jobs:
       - name: Build newer kernel package
         run: |
           pmbootstrap -v build linux-postmarketos-qcom-sm8250-alioth
+
+      - name: Build Alioth-patched ModemManager
+        run: |
+          pmbootstrap -v build --arch aarch64 modemmanager
+          test -f "$HOME/.local/var/pmbootstrap/packages/edge/aarch64/modemmanager-1.25.95_git20261005-r4.apk"
 
       - name: Build xiaomi-alioth image
         run: |
